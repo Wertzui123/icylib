@@ -1,8 +1,11 @@
+#if !defined(ICYLIB_MALLOC) || !defined(ICYLIB_MALLOC_ATOMIC) || !defined(ICYLIB_REALLOC) || !defined(ICYLIB_FREE)
+#include <stdlib.h>
+#endif
 #ifndef ICYLIB_MALLOC
 #define ICYLIB_MALLOC malloc
 #endif
 #ifndef ICYLIB_MALLOC_ATOMIC
-#define ICYLIB_MALLOC_ATOMIC malloc
+#define ICYLIB_MALLOC_ATOMIC ICYLIB_MALLOC
 #endif
 #ifndef ICYLIB_REALLOC
 #define ICYLIB_REALLOC realloc
