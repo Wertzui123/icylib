@@ -3,6 +3,16 @@
 
 #include "color.h"
 
+void icylib_draw_bresenham_circle(unsigned char* image, int xm, int ym, int r, icylib_Color color, void (*set_pixel)(unsigned char* image, int, int, icylib_Color));
+
+void icylib_draw_bresenham_thick_line(unsigned char* image, int x0, int y0, int x1, int y1, int thickness, icylib_Color color, void (*set_pixel)(unsigned char* image, int, int, icylib_Color));
+
+#ifdef ICYLIB_IMPLEMENTATION
+
+#include <math.h>
+
+#include "icylib.h"
+
 // The following functions were originally written by Alois Zingl and slightly modified to fit this project.
 /*
 MIT License
@@ -27,16 +37,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
-void icylib_draw_bresenham_circle(unsigned char* image, int xm, int ym, int r, icylib_Color color, void (*set_pixel)(unsigned char* image, int, int, icylib_Color));
-
-void icylib_draw_bresenham_thick_line(unsigned char* image, int x0, int y0, int x1, int y1, int thickness, icylib_Color color, void (*set_pixel)(unsigned char* image, int, int, icylib_Color));
-
-#ifdef ICYLIB_IMPLEMENTATION
-
-#include <math.h>
-
-#include "icylib.h"
 
 void icylib_draw_bresenham_circle(unsigned char* image, int xm, int ym, int r, icylib_Color color, void (*set_pixel)(unsigned char* image, int, int, icylib_Color))
 {
