@@ -176,8 +176,8 @@ int icylib_lazy_chunked_save_to_file(icylib_LazyChunkedImage* image, const char*
     data[14] = (image->rows_length >> 16) & 0xFF;
     data[15] = (image->rows_length >> 24) & 0xFF;
 
-    for (int i = 0; i < image->rows_length; i++) {
-        for (int j = 0; j < image->columns_length; j++) {
+    for (int j = 0; j < image->rows_length; j++) {
+        for (int i = 0; i < image->columns_length; i++) {
             if (image->chunk_rows[j].chunk_columns[i] != NULL) {
                 char* path = ICYLIB_MALLOC_ATOMIC(strlen(image->directory)
                     + 1 // '/'
@@ -188,9 +188,9 @@ int icylib_lazy_chunked_save_to_file(icylib_LazyChunkedImage* image, const char*
                     + 10 // max int length
                     + 4 // ".png"
                 );
-                sprintf(path, "%s/%d_%d.png", image->directory, j, i);
+                sprintf(path, "%s/%d_%d.png", image->directory, i, j);
                 while (1) {
-                    if (icylib_regular_save_to_file(image->chunk_rows[i].chunk_columns[j], path)) break;
+                    if (icylib_regular_save_to_file(image->chunk_rows[j].chunk_columns[i], path)) break;
                     // TODO: Add a limit to the number of retries
                 }
                 ICYLIB_FREE(path);
