@@ -258,11 +258,13 @@ void icylib_regular_fill_rectangle(icylib_RegularImage* image, int x1, int y1, i
 #endif
 
 void icylib_regular_draw_image(icylib_RegularImage* image, int x, int y, icylib_RegularImage* other, unsigned char blend) {
-    int maxHeight = icylib_imin(other->height, image->height - y);
-    int maxWidth = icylib_imin(other->width, image->width - x);
+    int minY = icylib_imax(-y, 0);
+    int minX = icylib_imax(-x, 0);
+    int maxY = icylib_imin(other->height, image->height - icylib_imax(y, 0));
+    int maxX = icylib_imin(other->width, image->width - icylib_imax(x, 0));
     if (blend) {
-        for (int j = 0; j < icylib_imax(0, icylib_imin(other->height, image->height - y)); j++) {
-            for (int i = 0; i < icylib_imax(0, icylib_imin(other->width, image->width - x)); i++) {
+        for (int j = minY; j < maxY; j++) {
+            for (int i = minX; i < maxX; i++) {
                 icylib_regular_set_pixel_blend(image, x + i, y + j, icylib_color_from_rgba(other->data[(j * other->width + i) * other->channels], other->data[(j * other->width + i) * other->channels + 1], other->data[(j * other->width + i) * other->channels + 2], other->channels == 4 ? other->data[(j * other->width + i) * other->channels + 3] : 255));
             }
         }
@@ -270,8 +272,8 @@ void icylib_regular_draw_image(icylib_RegularImage* image, int x, int y, icylib_
     else {
 #ifndef ICYLIB_NO_SIMD
         if (image->channels == 4) {
-            for (int j = 0; j < maxHeight; j++) {
-                for (int i = 0; i < maxWidth / 4; i++) {
+            for (int j = minY; j < maxY; j++) {
+                for (int i = minX; i < maxX / 4; i++) {
                     unsigned char* source_address = other->data + (i * 4 + other->width * j) * other->channels;
                     unsigned char* destination_address = image->data + ((x + i * 4) + image->width * (y + j)) * image->channels;
                     __m128i source = _mm_loadu_si128((__m128i*)source_address);
@@ -279,8 +281,8 @@ void icylib_regular_draw_image(icylib_RegularImage* image, int x, int y, icylib_
                 }
             }
             // Handle the remaining pixels separately
-            for (int j = 0; j < maxHeight; j++) {
-                for (int i = (maxWidth / 4) * 4; i < maxWidth; i++) {
+            for (int j = minY; j < maxY; j++) {
+                for (int i = (minX / 4) * 4; i < maxX; i++) {
                     unsigned char* source_address = other->data + (i + other->width * j) * other->channels;
                     unsigned char* destination_address = image->data + ((x + i) + image->width * (y + j)) * image->channels;
                     memcpy(destination_address, source_address, other->channels);
@@ -289,8 +291,8 @@ void icylib_regular_draw_image(icylib_RegularImage* image, int x, int y, icylib_
         }
         else {
 #endif
-            for (int j = 0; j < maxHeight; j++) {
-                for (int i = 0; i < maxWidth; i++) {
+            for (int j = minY; j < maxY; j++) {
+                for (int i = minX; i < maxX; i++) {
                     memcpy(image->data + ((x + i) + image->width * (y + j)) * image->channels, other->data + (i + other->width * j) * other->channels, other->channels);
                 }
             }
