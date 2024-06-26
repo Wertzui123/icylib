@@ -1,4 +1,4 @@
-#if !defined(ICYLIB_MALLOC) || !defined(ICYLIB_MALLOC_ATOMIC) || !defined(ICYLIB_REALLOC) || !defined(ICYLIB_FREE)
+#if !defined(ICYLIB_MALLOC) || !defined(ICYLIB_REALLOC) || !defined(ICYLIB_FREE)
 #include <stdlib.h>
 #endif
 #ifndef ICYLIB_MALLOC
