@@ -336,10 +336,10 @@ void icylib_primitive_chunked_fill_circle(icylib_PrimitiveChunkedImage* image, i
 
 void icylib_primitive_chunked_draw_line_with_thickness(icylib_PrimitiveChunkedImage* image, int x1, int y1, int x2, int y2, int thickness, icylib_Color color, unsigned char blend, unsigned char antialias) {
     if (antialias) {
-        icylib_draw_thick_xiaolin_wu_aa_line((unsigned char*)image, x1, y1, x2, y2, thickness, color, (void (*)(unsigned char*, int, int, icylib_Color))(blend ? icylib_regular_set_pixel_blend : icylib_regular_set_pixel));
+        icylib_draw_thick_xiaolin_wu_aa_line((unsigned char*)image, x1, y1, x2, y2, thickness, color, (void (*)(unsigned char*, int, int, icylib_Color))(blend ? icylib_primitive_chunked_set_pixel_blend : icylib_primitive_chunked_set_pixel));
     }
     else {
-        icylib_draw_bresenham_thick_line((unsigned char*)image, x1, y1, x2, y2, thickness, color, (void (*)(unsigned char*, int, int, icylib_Color))(blend ? icylib_regular_set_pixel_blend : icylib_regular_set_pixel));
+        icylib_draw_bresenham_thick_line((unsigned char*)image, x1, y1, x2, y2, thickness, color, (void (*)(unsigned char*, int, int, icylib_Color))(blend ? icylib_primitive_chunked_set_pixel_blend : icylib_primitive_chunked_set_pixel));
     }
 }
 
