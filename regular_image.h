@@ -452,34 +452,68 @@ void icylib_regular_replace_color_ignore_alpha(icylib_RegularImage* image, icyli
 }
 
 void icylib_regular_blur(icylib_RegularImage* image, int radius) {
-    unsigned char* new_data = ICYLIB_MALLOC_ATOMIC(image->width * image->height * image->channels);
-    for (int j = 0; j < image->height; j++) {
-        for (int i = 0; i < image->width; i++) {
+    int width = image->width;
+    int height = image->height;
+    int channels = image->channels;
+    unsigned char* temp_data = ICYLIB_MALLOC_ATOMIC(width * height * channels);
+    unsigned char* new_data = ICYLIB_MALLOC_ATOMIC(width * height * channels);
+
+    // Horizontal pass
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
             int r = 0;
             int g = 0;
             int b = 0;
             int a = 0;
             int count = 0;
-            for (int y = -radius; y <= radius; y++) {
-                for (int x = -radius; x <= radius; x++) {
-                    int nx = i + x;
-                    int ny = j + y;
-                    if (nx >= 0 && nx < image->width && ny >= 0 && ny < image->height) {
-                        icylib_Color pixel = icylib_regular_get_pixel(image, nx, ny);
-                        r += pixel.r;
-                        g += pixel.g;
-                        b += pixel.b;
-                        a += pixel.a;
-                        count++;
-                    }
+
+            for (int x = -radius; x <= radius; x++) {
+                int nx = i + x;
+                if (nx >= 0 && nx < width) {
+                    icylib_Color pixel = icylib_regular_get_pixel(image, nx, j);
+                    r += pixel.r;
+                    g += pixel.g;
+                    b += pixel.b;
+                    a += pixel.a;
+                    count++;
                 }
             }
-            new_data[(j * image->width + i) * image->channels] = r / count;
-            new_data[(j * image->width + i) * image->channels + 1] = g / count;
-            new_data[(j * image->width + i) * image->channels + 2] = b / count;
-            new_data[(j * image->width + i) * image->channels + 3] = a / count;
+
+            temp_data[(j * width + i) * channels] = r / count;
+            temp_data[(j * width + i) * channels + 1] = g / count;
+            temp_data[(j * width + i) * channels + 2] = b / count;
+            temp_data[(j * width + i) * channels + 3] = a / count;
         }
     }
+
+    // Vertical pass
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
+            int r = 0;
+            int g = 0;
+            int b = 0;
+            int a = 0;
+            int count = 0;
+
+            for (int y = -radius; y <= radius; y++) {
+                int ny = j + y;
+                if (ny >= 0 && ny < height) {
+                    r += temp_data[(ny * width + i) * channels];
+                    g += temp_data[(ny * width + i) * channels + 1];
+                    b += temp_data[(ny * width + i) * channels + 2];
+                    a += temp_data[(ny * width + i) * channels + 3];
+                    count++;
+                }
+            }
+
+            new_data[(j * width + i) * channels] = r / count;
+            new_data[(j * width + i) * channels + 1] = g / count;
+            new_data[(j * width + i) * channels + 2] = b / count;
+            new_data[(j * width + i) * channels + 3] = a / count;
+        }
+    }
+
+    ICYLIB_FREE(temp_data);
     ICYLIB_FREE(image->data);
     image->data = new_data;
 }
